@@ -1,6 +1,8 @@
 package com.example.myapplication.data
 
 import com.example.myapplication.data.model.LoggedInUser
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.tasks.await
 import java.io.IOException
 
 /**
@@ -8,17 +10,24 @@ import java.io.IOException
  */
 class LoginDataSource {
 
-    fun login(username: String, password: String): Result<LoggedInUser> {
-        try {
-            // TODO: handle loggedInUser authentication
-            val fakeUser = LoggedInUser(java.util.UUID.randomUUID().toString(), "Jane Doe")
-            return Result.Success(fakeUser)
-        } catch (e: Throwable) {
-            return Result.Error(IOException("Error logging in", e))
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+
+    suspend fun login(email: String, password: String): Result<LoggedInUser> {
+        return try {
+            val result = auth.signInWithEmailAndPassword(email, password).await()
+            val user = result.user
+            if (user != null) {
+                val loggedInUser = LoggedInUser(user.uid, user.email ?: "")
+                Result.Success(loggedInUser)
+            } else {
+                Result.Error(IOException("User not found"))
+            }
+        } catch (e: Exception) {
+            Result.Error(IOException("Error logging in", e))
         }
     }
 
     fun logout() {
-        // TODO: revoke authentication
+        auth.signOut()
     }
 }
