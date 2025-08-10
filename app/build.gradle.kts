@@ -49,6 +49,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    // Explicit Kotlin stdlib dependency for Kotlin 2.x
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.0.21")
     implementation(libs.androidx.annotation)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
