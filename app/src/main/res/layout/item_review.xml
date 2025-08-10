@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+
+    <TextView
+        android:id="@+id/textViewReviewUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Utente"
+        android:textStyle="bold"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/textViewReviewRole"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ruolo"
+        android:textSize="14sp"
+        android:textColor="#666666"
+        android:layout_marginBottom="2dp"/>
+
+    <TextView
+        android:id="@+id/textViewReviewRatings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Valutazioni: Ambiente, Retribuzione, Crescita, WLB"
+        android:textSize="14sp"
+        android:layout_marginBottom="2dp"/>
+
+    <TextView
+        android:id="@+id/textViewReviewComment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Commento"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:id="@+id/textViewReviewDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Data"
+        android:textSize="12sp"
+        android:textColor="#888888"/>
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:id="@+id/mediaScrollView">
+        <LinearLayout
+            android:id="@+id/mediaContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"/>
+    </HorizontalScrollView>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp">
+        <Button
+            android:id="@+id/buttonEditReview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Modifica"
+            android:visibility="gone"/>
+        <Button
+            android:id="@+id/buttonDeleteReview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Elimina"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+</LinearLayout>

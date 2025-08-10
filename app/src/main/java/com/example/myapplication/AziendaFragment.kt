@@ -30,11 +30,14 @@ class AziendaFragment : Fragment() {
         }
     }
 
-    private var item: String? = null
+    private var companyId: String? = null
+    private var currentUserId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        item = arguments?.getString(ARG_ITEM)
+        companyId = arguments?.getString(ARG_ITEM)
+        // TODO: recupera l'ID utente corrente da auth/session
+        currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
     }
 
     override fun onCreateView(
@@ -42,7 +45,48 @@ class AziendaFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_azienda, container, false)
-        // Usa 'item' per aggiornare la UI
+        val imageViewLogo = view.findViewById<android.widget.ImageView>(R.id.imageViewCompanyLogo)
+        val textViewName = view.findViewById<android.widget.TextView>(R.id.textViewCompanyName)
+        val textViewSector = view.findViewById<android.widget.TextView>(R.id.textViewCompanySector)
+        val textViewLocation = view.findViewById<android.widget.TextView>(R.id.textViewCompanyLocation)
+        val buttonEdit = view.findViewById<android.widget.Button>(R.id.buttonEditCompany)
+
+        // Carica dati azienda da Firestore
+        companyId?.let { id ->
+            com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                .collection("companies").document(id).get()
+                .addOnSuccessListener { doc ->
+                    val name = doc.getString("name") ?: ""
+                    val sector = doc.getString("sector") ?: ""
+                    val location = doc.getString("location") ?: ""
+                    val logoUrl = doc.getString("logoUrl") ?: ""
+                    val createdBy = doc.getString("createdBy") ?: ""
+                    textViewName.text = name
+                    textViewSector.text = sector
+                    textViewLocation.text = location
+                    if (logoUrl.isNotEmpty()) {
+                        com.bumptech.glide.Glide.with(this).load(logoUrl).into(imageViewLogo)
+                    }
+                    // Mostra il bottone solo se l'utente è il creatore
+                    if (createdBy == currentUserId) {
+                        buttonEdit.visibility = View.VISIBLE
+                        buttonEdit.setOnClickListener {
+                            // Apri dialog di modifica (riusa quella della lista)
+                            val dialog = com.example.myapplication.ui.company.CompanyListFragment()
+                            dialog.showEditCompanyDialog(
+                                com.example.myapplication.data.model.Company(
+                                    id = id,
+                                    name = name,
+                                    sector = sector,
+                                    location = location,
+                                    logoUrl = logoUrl,
+                                    createdBy = createdBy
+                                )
+                            )
+                        }
+                    }
+                }
+        }
         return view
     }
 }

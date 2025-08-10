@@ -14,6 +14,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.myapplication.R
 import com.example.myapplication.data.model.Review
+import com.example.myapplication.data.model.UserProfile
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class AccountFragment : Fragment() {
     private val viewModel: AccountViewModel by viewModels()
@@ -52,6 +55,54 @@ class AccountFragment : Fragment() {
         viewModel.userReviews.observe(viewLifecycleOwner, Observer { reviews ->
             adapter.submitList(reviews)
         })
+
+        // Logica modifica profilo
+        val buttonEdit = view.findViewById<View>(R.id.buttonEditProfile)
+        buttonEdit.setOnClickListener {
+            val currentProfile = viewModel.userProfile.value ?: return@setOnClickListener
+            showEditProfileDialog(currentProfile)
+        }
+
+        viewModel.updateProfileState.observe(viewLifecycleOwner, Observer { success ->
+            if (success == true) {
+                // Mostra feedback di successo
+                android.widget.Toast.makeText(requireContext(), "Profilo aggiornato!", android.widget.Toast.LENGTH_SHORT).show()
+            } else if (success == false) {
+                android.widget.Toast.makeText(requireContext(), "Errore aggiornamento profilo", android.widget.Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun showEditProfileDialog(profile: UserProfile) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_edit_profile, null)
+
+        val inputName = dialogView.findViewById<TextInputEditText>(R.id.editTextName)
+        val inputAge = dialogView.findViewById<TextInputEditText>(R.id.editTextAge)
+        val inputJob = dialogView.findViewById<TextInputEditText>(R.id.editTextJob)
+        val inputBio = dialogView.findViewById<TextInputEditText>(R.id.editTextBio)
+        val inputProfileImage = dialogView.findViewById<TextInputEditText>(R.id.editTextProfileImage)
+
+        inputName.setText(profile.fullName)
+        inputAge.setText(profile.age.toString())
+        inputJob.setText(profile.currentJob)
+        inputBio.setText(profile.bio)
+        inputProfileImage.setText(profile.profileImageUrl)
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.edit_profile))
+            .setView(dialogView)
+            .setPositiveButton(getString(R.string.save)) { _, _ ->
+                val updated = profile.copy(
+                    fullName = inputName.text.toString(),
+                    age = inputAge.text.toString().toIntOrNull() ?: 0,
+                    currentJob = inputJob.text.toString(),
+                    bio = inputBio.text.toString(),
+                    profileImageUrl = inputProfileImage.text.toString()
+                )
+                viewModel.updateUserProfile(updated)
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
     }
 }
 

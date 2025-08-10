@@ -20,14 +20,20 @@ class AccountViewModel(
     private val _userReviews = MutableLiveData<List<Review>>()
     val userReviews: LiveData<List<Review>> = _userReviews
 
-    // Placeholder per upload immagine profilo
-    private val _profileImageUploadState = MutableLiveData<Boolean>()
-    val profileImageUploadState: LiveData<Boolean> = _profileImageUploadState
+    // Stato aggiornamento profilo
+    private val _updateProfileState = MutableLiveData<Boolean>()
+    val updateProfileState: LiveData<Boolean> = _updateProfileState
 
-    fun uploadProfileImage(userId: String, imageUri: String) {
-        // TODO: implementa upload su Firebase Storage e aggiorna il profilo utente
-        // Per ora solo placeholder
-        _profileImageUploadState.value = false
+    fun updateUserProfile(userProfile: UserProfile) {
+        viewModelScope.launch {
+            try {
+                userProfileRepository.updateUserProfile(userProfile)
+                _userProfile.value = userProfile
+                _updateProfileState.value = true
+            } catch (e: Exception) {
+                _updateProfileState.value = false
+            }
+        }
     }
 
     fun loadUserData(userId: String) {

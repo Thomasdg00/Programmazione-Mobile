@@ -29,6 +29,21 @@
             android:textSize="22sp"
             android:layout_marginBottom="8dp"/>
 
+
+        <TextView
+            android:id="@+id/textViewUserType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tipo: standard"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/textViewUserBio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bio: ..."
+            android:layout_marginBottom="8dp"/>
+
         <TextView
             android:id="@+id/textViewUserAge"
             android:layout_width="wrap_content"
@@ -62,6 +77,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="100dp"/>
+
+        <Button
+            android:id="@+id/buttonEditProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Modifica profilo"
+            android:layout_marginTop="16dp"/>
 
     </LinearLayout>
 </ScrollView>

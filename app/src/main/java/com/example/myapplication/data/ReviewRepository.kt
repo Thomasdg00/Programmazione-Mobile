@@ -18,6 +18,14 @@ class ReviewRepository(
         firestore.collection("reviews").add(review).await()
     }
 
+    suspend fun updateReview(review: Review) {
+        firestore.collection("reviews").document(review.id).set(review).await()
+    }
+
+    suspend fun deleteReview(reviewId: String) {
+        firestore.collection("reviews").document(reviewId).delete().await()
+    }
+
     suspend fun getReviewsByUser(userId: String): List<Review> {
         val snapshot = firestore.collection("reviews")
             .whereEqualTo("userId", userId)

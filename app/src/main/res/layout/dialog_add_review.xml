@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ambiente di lavoro"
+        android:textStyle="bold"/>
+    <RatingBar
+        android:id="@+id/ratingBarAmbiente"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="5"
+        android:stepSize="1.0"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Retribuzione"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp"/>
+    <RatingBar
+        android:id="@+id/ratingBarRetribuzione"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="5"
+        android:stepSize="1.0"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Crescita professionale"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp"/>
+    <RatingBar
+        android:id="@+id/ratingBarCrescita"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="5"
+        android:stepSize="1.0"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Work-life balance"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp"/>
+    <RatingBar
+        android:id="@+id/ratingBarWLB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="5"
+        android:stepSize="1.0"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Aggiungi immagini (opzionale)"
+        android:layout_marginTop="12dp"/>
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp">
+        <LinearLayout
+            android:id="@+id/mediaPreviewContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"/>
+    </HorizontalScrollView>
+    <Button
+        android:id="@+id/buttonAddMedia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Aggiungi Immagine"/>
+
+    <EditText
+        android:id="@+id/editTextReviewRole"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ruolo ricoperto (opzionale)"
+        android:inputType="textPersonName"
+        android:layout_marginTop="8dp"/>
+
+    <EditText
+        android:id="@+id/editTextReviewComment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Scrivi la tua recensione..."
+        android:inputType="textMultiLine"
+        android:minLines="3"
+        android:layout_marginTop="8dp"/>
+
+    <CheckBox
+        android:id="@+id/checkBoxAnonymous"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Recensione anonima"
+        android:layout_marginTop="8dp"/>
+
+</LinearLayout>
