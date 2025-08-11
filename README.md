@@ -62,12 +62,12 @@ Un'applicazione mobile per la valutazione e recensione delle aziende da parte de
 
 ## 🤝 Contributi
 
-*[Da completare con le linee guida per i contributi]*
 
 ## 📄 Licenza
 
-*[Da specificare la licenza del progetto]*
+Licenza MIT
 
 ---
 
 **Progetto di Programmazione Mobile** - *[Anno Accademico 2024-2025/Corso di Ingegneria Informatica e dell'Automazione]*
+
