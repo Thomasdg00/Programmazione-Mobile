@@ -19,13 +19,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:prompt="Settore" />
+            android:prompt="@string/prompt_settore" />
         <Spinner
             android:id="@+id/spinnerLocation"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:prompt="Località" />
+            android:prompt="@string/prompt_localita" />
     </LinearLayout>
 
     <androidx.appcompat.widget.SearchView
@@ -36,7 +36,7 @@
 
 
     <androidx.appcompat.widget.SearchView
-        android:id="@+id/searchViewCompanies"
+        android:id="@+id/searchViewCompanies2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:queryHint="Cerca azienda..."

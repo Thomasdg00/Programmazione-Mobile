@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.data.model.Review
+import com.example.myapplication.ui.azienda.AziendaRecensioniViewModel
 
 class AziendaRecensioniFragment : Fragment() {
     private val viewModel: ReviewViewModel by viewModels()
@@ -52,10 +53,10 @@ class AziendaRecensioniFragment : Fragment() {
             val userId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: ""
             val companyId = arguments?.getString("companyId") ?: return@setOnClickListener
             val alreadyReviewed = adapter.currentUserId != null &&
-                adapter.currentUserId?.let { id ->
-                    adapter.itemCount > 0 &&
-                    adapter.reviews.any { it.userId == id }
-                } == true
+                    adapter.currentUserId?.let { id ->
+                        adapter.itemCount > 0 &&
+                                adapter.reviews.any { it.userId == id }
+                    } == true
             if (alreadyReviewed) {
                 androidx.appcompat.app.AlertDialog.Builder(requireContext())
                     .setTitle("Recensione già presente")
@@ -71,24 +72,31 @@ class AziendaRecensioniFragment : Fragment() {
     }
 
     private var selectedMediaUris: MutableList<android.net.Uri> = mutableListOf()
-    private val pickMediaLauncher = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.GetMultipleContents()) { uris ->
-        if (uris != null) {
-            selectedMediaUris.clear()
-            selectedMediaUris.addAll(uris)
+    private val pickMediaLauncher =
+        registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.GetMultipleContents()) { uris ->
+            if (uris != null) {
+                selectedMediaUris.clear()
+                selectedMediaUris.addAll(uris)
+            }
         }
-    }
 
     private fun showAddReviewDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_review, null)
-        val ratingBarAmbiente = dialogView.findViewById<android.widget.RatingBar>(R.id.ratingBarAmbiente)
-        val ratingBarRetribuzione = dialogView.findViewById<android.widget.RatingBar>(R.id.ratingBarRetribuzione)
-        val ratingBarCrescita = dialogView.findViewById<android.widget.RatingBar>(R.id.ratingBarCrescita)
+        val ratingBarAmbiente =
+            dialogView.findViewById<android.widget.RatingBar>(R.id.ratingBarAmbiente)
+        val ratingBarRetribuzione =
+            dialogView.findViewById<android.widget.RatingBar>(R.id.ratingBarRetribuzione)
+        val ratingBarCrescita =
+            dialogView.findViewById<android.widget.RatingBar>(R.id.ratingBarCrescita)
         val ratingBarWLB = dialogView.findViewById<android.widget.RatingBar>(R.id.ratingBarWLB)
         val editTextRole = dialogView.findViewById<android.widget.EditText>(R.id.editTextReviewRole)
-        val editTextComment = dialogView.findViewById<android.widget.EditText>(R.id.editTextReviewComment)
-        val checkBoxAnonymous = dialogView.findViewById<android.widget.CheckBox>(R.id.checkBoxAnonymous)
+        val editTextComment =
+            dialogView.findViewById<android.widget.EditText>(R.id.editTextReviewComment)
+        val checkBoxAnonymous =
+            dialogView.findViewById<android.widget.CheckBox>(R.id.checkBoxAnonymous)
         val buttonAddMedia = dialogView.findViewById<android.widget.Button>(R.id.buttonAddMedia)
-        val mediaPreviewContainer = dialogView.findViewById<android.widget.LinearLayout>(R.id.mediaPreviewContainer)
+        val mediaPreviewContainer =
+            dialogView.findViewById<android.widget.LinearLayout>(R.id.mediaPreviewContainer)
 
         selectedMediaUris.clear()
         buttonAddMedia.setOnClickListener {
@@ -107,25 +115,53 @@ class AziendaRecensioniFragment : Fragment() {
                 val role = editTextRole.text.toString()
                 val anonymous = checkBoxAnonymous.isChecked
                 val companyId = arguments?.getString("companyId") ?: return@setPositiveButton
-                val userId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: ""
-                val userName = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.displayName ?: ""
+                val userId =
+                    com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: ""
+                val userName =
+                    com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.displayName
+                        ?: ""
                 // Upload immagini su Firebase Storage e salva url
                 val storage = com.google.firebase.storage.FirebaseStorage.getInstance().reference
                 val mediaUrls = mutableListOf<String>()
                 if (selectedMediaUris.isNotEmpty()) {
                     for (uri in selectedMediaUris) {
-                        val ref = storage.child("review_media/${System.currentTimeMillis()}_${uri.lastPathSegment}")
+                        val ref =
+                            storage.child("review_media/${System.currentTimeMillis()}_${uri.lastPathSegment}")
                         ref.putFile(uri).addOnSuccessListener {
                             ref.downloadUrl.addOnSuccessListener { downloadUri ->
                                 mediaUrls.add(downloadUri.toString())
                                 if (mediaUrls.size == selectedMediaUris.size) {
-                                    saveReview(companyId, userId, userName, ambiente, retribuzione, crescita, wlb, comment, role, anonymous, mediaUrls)
+                                    saveReview(
+                                        companyId,
+                                        userId,
+                                        userName,
+                                        ambiente,
+                                        retribuzione,
+                                        crescita,
+                                        wlb,
+                                        comment,
+                                        role,
+                                        anonymous,
+                                        mediaUrls
+                                    )
                                 }
                             }
                         }
                     }
                 } else {
-                    saveReview(companyId, userId, userName, ambiente, retribuzione, crescita, wlb, comment, role, anonymous, mediaUrls)
+                    saveReview(
+                        companyId,
+                        userId,
+                        userName,
+                        ambiente,
+                        retribuzione,
+                        crescita,
+                        wlb,
+                        comment,
+                        role,
+                        anonymous,
+                        mediaUrls
+                    )
                 }
             }
             .setNegativeButton("Annulla", null)
@@ -134,15 +170,21 @@ class AziendaRecensioniFragment : Fragment() {
 
     private fun showEditReviewDialog(review: Review) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_review, null)
-        val ratingBarAmbiente = dialogView.findViewById<android.widget.RatingBar>(R.id.ratingBarAmbiente)
-        val ratingBarRetribuzione = dialogView.findViewById<android.widget.RatingBar>(R.id.ratingBarRetribuzione)
-        val ratingBarCrescita = dialogView.findViewById<android.widget.RatingBar>(R.id.ratingBarCrescita)
+        val ratingBarAmbiente =
+            dialogView.findViewById<android.widget.RatingBar>(R.id.ratingBarAmbiente)
+        val ratingBarRetribuzione =
+            dialogView.findViewById<android.widget.RatingBar>(R.id.ratingBarRetribuzione)
+        val ratingBarCrescita =
+            dialogView.findViewById<android.widget.RatingBar>(R.id.ratingBarCrescita)
         val ratingBarWLB = dialogView.findViewById<android.widget.RatingBar>(R.id.ratingBarWLB)
         val editTextRole = dialogView.findViewById<android.widget.EditText>(R.id.editTextReviewRole)
-        val editTextComment = dialogView.findViewById<android.widget.EditText>(R.id.editTextReviewComment)
-        val checkBoxAnonymous = dialogView.findViewById<android.widget.CheckBox>(R.id.checkBoxAnonymous)
+        val editTextComment =
+            dialogView.findViewById<android.widget.EditText>(R.id.editTextReviewComment)
+        val checkBoxAnonymous =
+            dialogView.findViewById<android.widget.CheckBox>(R.id.checkBoxAnonymous)
         val buttonAddMedia = dialogView.findViewById<android.widget.Button>(R.id.buttonAddMedia)
-        val mediaPreviewContainer = dialogView.findViewById<android.widget.LinearLayout>(R.id.mediaPreviewContainer)
+        val mediaPreviewContainer =
+            dialogView.findViewById<android.widget.LinearLayout>(R.id.mediaPreviewContainer)
 
         // Pre-fill fields
         ratingBarAmbiente.rating = review.ratingAmbiente.toFloat()
@@ -177,46 +219,63 @@ class AziendaRecensioniFragment : Fragment() {
                 val mediaUrls = review.mediaUrls.toMutableList()
                 if (selectedMediaUris.isNotEmpty()) {
                     for (uri in selectedMediaUris) {
-                        val ref = storage.child("review_media/${System.currentTimeMillis()}_${uri.lastPathSegment}")
+                        val ref =
+                            storage.child("review_media/${System.currentTimeMillis()}_${uri.lastPathSegment}")
                         ref.putFile(uri).addOnSuccessListener {
                             ref.downloadUrl.addOnSuccessListener { downloadUri ->
                                 mediaUrls.add(downloadUri.toString())
                                 if (mediaUrls.size == review.mediaUrls.size + selectedMediaUris.size) {
-                                    saveEditedReview(review.copy(
-                                        rating = ((ambiente + retribuzione + crescita + wlb) / 4),
-                                        ratingAmbiente = ambiente,
-                                        ratingRetribuzione = retribuzione,
-                                        ratingCrescita = crescita,
-                                        ratingWLB = wlb,
-                                        comment = comment,
-                                        role = role,
-                                        anonymous = anonymous,
-                                        mediaUrls = mediaUrls,
-                                        timestamp = System.currentTimeMillis()
-                                    ))
+                                    saveEditedReview(
+                                        review.copy(
+                                            rating = ((ambiente + retribuzione + crescita + wlb) / 4),
+                                            ratingAmbiente = ambiente,
+                                            ratingRetribuzione = retribuzione,
+                                            ratingCrescita = crescita,
+                                            ratingWLB = wlb,
+                                            comment = comment,
+                                            role = role,
+                                            anonymous = anonymous,
+                                            mediaUrls = mediaUrls,
+                                            timestamp = System.currentTimeMillis()
+                                        )
+                                    )
                                 }
                             }
                         }
                     }
                 } else {
-                    saveEditedReview(review.copy(
-                        rating = ((ambiente + retribuzione + crescita + wlb) / 4),
-                        ratingAmbiente = ambiente,
-                        ratingRetribuzione = retribuzione,
-                        ratingCrescita = crescita,
-                        ratingWLB = wlb,
-                        comment = comment,
-                        role = role,
-                        anonymous = anonymous,
-                        timestamp = System.currentTimeMillis()
-                    ))
+                    saveEditedReview(
+                        review.copy(
+                            rating = ((ambiente + retribuzione + crescita + wlb) / 4),
+                            ratingAmbiente = ambiente,
+                            ratingRetribuzione = retribuzione,
+                            ratingCrescita = crescita,
+                            ratingWLB = wlb,
+                            comment = comment,
+                            role = role,
+                            anonymous = anonymous,
+                            timestamp = System.currentTimeMillis()
+                        )
+                    )
                 }
             }
             .setNegativeButton("Annulla", null)
             .show()
     }
 
-    private fun saveReview(companyId: String, userId: String, userName: String, ambiente: Int, retribuzione: Int, crescita: Int, wlb: Int, comment: String, role: String, anonymous: Boolean, mediaUrls: List<String>) {
+    private fun saveReview(
+        companyId: String,
+        userId: String,
+        userName: String,
+        ambiente: Int,
+        retribuzione: Int,
+        crescita: Int,
+        wlb: Int,
+        comment: String,
+        role: String,
+        anonymous: Boolean,
+        mediaUrls: List<String>
+    ) {
         val review = com.example.myapplication.data.model.Review(
             id = "",
             companyId = companyId,
@@ -239,8 +298,8 @@ class AziendaRecensioniFragment : Fragment() {
     private fun saveEditedReview(review: Review) {
         (viewModel as? com.example.myapplication.ui.review.ReviewViewModel)?.updateReview(review)
     }
-        return view
-    }
+    //return view
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

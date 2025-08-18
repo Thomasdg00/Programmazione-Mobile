@@ -11,12 +11,16 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import com.example.myapplication.MainActivity
 import com.example.myapplication.databinding.ActivityLoginBinding
 
 import com.example.myapplication.R
+import com.example.myapplication.data.LoginDataSource
+import com.example.myapplication.data.LoginRepository
+import com.example.myapplication.ui.register.RegisterFragment
 
 class LoginActivity : AppCompatActivity() {
 
@@ -34,7 +38,7 @@ class LoginActivity : AppCompatActivity() {
         val login = binding.login
         val loading = binding.loading
 
-        loginViewModel = ViewModelProvider(this, LoginViewModelFactory())
+        loginViewModel = ViewModelProvider(this, LoginViewModelFactory(repository = LoginRepository(dataSource = LoginDataSource())))
             .get(LoginViewModel::class.java)
 
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
@@ -99,6 +103,13 @@ class LoginActivity : AppCompatActivity() {
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
                 loginViewModel.login(email.text.toString(), password.text.toString())
+            }
+
+            binding.buttonGoToRegister?.setOnClickListener {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.container, RegisterFragment())
+                    .addToBackStack(null)
+                    .commit()
             }
         }
     }

@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class ReviewAdapter : RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder>() {
-    private var reviews: List<Review> = emptyList()
+    var reviews: List<Review> = emptyList()
 
     fun submitList(list: List<Review>) {
         reviews = list
@@ -25,10 +25,10 @@ class ReviewAdapter : RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder>() {
         return ReviewViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ReviewViewHolder, position: Int) {
+  /*  override fun onBindViewHolder(holder: ReviewViewHolder, position: Int) {
         holder.bind(reviews[position])
     }
-
+*/
     override fun getItemCount() = reviews.size
 
     var currentUserId: String? = null

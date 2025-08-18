@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplication.R
 import com.example.myapplication.data.model.Review
 
 class AziendaRecensioniFragment : Fragment() {
@@ -21,7 +22,7 @@ class AziendaRecensioniFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_azienda_recensioni, container, false)
-        recyclerView = view.findViewById(R.id.recyclerViewRecensioni)
+        recyclerView = view.findViewById(R.id.recyclerViewReviews)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         adapter = RecensioniAdapter()
         recyclerView.adapter = adapter

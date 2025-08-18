@@ -71,6 +71,7 @@ class CompanyListFragment : Fragment() {
                 filterCompanies()
                 return true
             }
+
         })
 
         spinnerSector.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
@@ -97,7 +98,7 @@ class CompanyListFragment : Fragment() {
             setupSpinners(companies)
             filterCompanies()
         }
-        viewModel.loadCompanies()
+        viewModel.loadCompanies() }
     private fun filterCompanies() {
         val query = searchView.query?.toString()?.trim() ?: ""
         val filtered = allCompanies.filter { company ->
@@ -111,7 +112,7 @@ class CompanyListFragment : Fragment() {
         adapter.submitList(filtered)
     }
 
-    private fun setupSpinners(companies: List<Company>) {
+     private fun setupSpinners(companies: List<Company>) {
         val sectors = listOf("Tutti i settori") + companies.map { it.sector }.distinct().sorted()
         val locations = listOf("Tutte le località") + companies.map { it.location }.distinct().sorted()
         val sectorAdapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, sectors)
@@ -121,9 +122,9 @@ class CompanyListFragment : Fragment() {
         locationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerLocation.adapter = locationAdapter
     }
-    }
 
-    private fun showEditCompanyDialog(company: Company?) {
+
+    fun showEditCompanyDialog(company: Company?) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_edit_company, null)
         val nameInput = dialogView.findViewById<TextInputEditText>(R.id.editTextCompanyName)
         val sectorInput = dialogView.findViewById<TextInputEditText>(R.id.editTextCompanySector)
@@ -190,4 +191,4 @@ class CompanyListFragment : Fragment() {
             }
     }
     }
-}
+

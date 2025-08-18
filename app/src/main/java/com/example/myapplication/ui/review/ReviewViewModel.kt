@@ -8,22 +8,10 @@ import com.example.myapplication.data.ReviewRepository
 import com.example.myapplication.data.model.Review
 import kotlinx.coroutines.launch
 
-class ReviewViewModel(
-    fun updateReview(review: Review) {
-        viewModelScope.launch {
-            repository.updateReview(review)
-            getReviewsForCompany(review.companyId)
-        }
-    }
+class ReviewViewModel : ViewModel() {
 
-    fun deleteReview(review: Review) {
-        viewModelScope.launch {
-            repository.deleteReview(review.id)
-            getReviewsForCompany(review.companyId)
-        }
-    }
     private val repository: ReviewRepository = ReviewRepository()
-) : ViewModel() {
+
     private val _reviews = MutableLiveData<List<Review>>()
     val reviews: LiveData<List<Review>> = _reviews
 
@@ -39,4 +27,19 @@ class ReviewViewModel(
             getReviewsForCompany(review.companyId)
         }
     }
+
+    fun updateReview(review: Review) {
+        viewModelScope.launch {
+            repository.updateReview(review)
+            getReviewsForCompany(review.companyId)
+        }
+    }
+
+    fun deleteReview(review: Review) {
+        viewModelScope.launch {
+            repository.deleteReview(review.id)
+            getReviewsForCompany(review.companyId)
+        }
+    }
 }
+
