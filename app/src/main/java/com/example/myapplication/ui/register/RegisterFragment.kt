@@ -70,7 +70,9 @@ class RegisterFragment : Fragment() {
             }
             result.success?.let {
                 Toast.makeText(requireContext(), getString(R.string.registration_success) + ", " + it.displayName, Toast.LENGTH_SHORT).show()
-                // TODO: Navigate to main screen or login
+                val intent = android.content.Intent(requireContext(), com.example.myapplication.MainActivity::class.java)
+                startActivity(intent)
+                requireActivity().finish()
             }
         }
     }

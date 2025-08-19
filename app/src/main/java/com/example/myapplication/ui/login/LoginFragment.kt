@@ -47,7 +47,9 @@ class LoginFragment : Fragment() {
             }
             result.success?.let {
                 Toast.makeText(requireContext(), getString(R.string.welcome) + ", " + it.displayName, Toast.LENGTH_SHORT).show()
-                // TODO: Navigate to main screen
+                val intent = android.content.Intent(requireContext(), com.example.myapplication.MainActivity::class.java)
+                startActivity(intent)
+                requireActivity().finish()
             }
         }
     }

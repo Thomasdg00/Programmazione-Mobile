@@ -105,12 +105,7 @@ class LoginActivity : AppCompatActivity() {
                 loginViewModel.login(email.text.toString(), password.text.toString())
             }
 
-            binding.buttonGoToRegister?.setOnClickListener {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.container, RegisterFragment())
-                    .addToBackStack(null)
-                    .commit()
-            }
+
         }
     }
 
