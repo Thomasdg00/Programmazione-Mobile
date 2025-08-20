@@ -13,18 +13,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp">
         <Spinner
             android:id="@+id/spinnerSector"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginEnd="4dp"
             android:prompt="@string/prompt_settore" />
         <Spinner
             android:id="@+id/spinnerLocation"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginStart="4dp"
             android:prompt="@string/prompt_localita" />
     </LinearLayout>
 
@@ -35,12 +38,7 @@
         android:queryHint="Cerca azienda..."/>
 
 
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/searchViewCompanies2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:queryHint="Cerca azienda..."
-        app:iconifiedByDefault="false" />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewCompanies"

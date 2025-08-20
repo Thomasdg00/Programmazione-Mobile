@@ -17,6 +17,19 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // BYPASS LOGIN - COMMENTATO PER DEBUG
+        // Controlla se l'utente è loggato
+        /*
+        val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            // Se non c'è utente loggato, vai alla schermata di login
+            val intent = Intent(this, com.example.myapplication.ui.auth.AuthActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
+        */
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(findViewById(R.id.toolbar))

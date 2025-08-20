@@ -158,7 +158,8 @@ class CompanyListFragment : Fragment() {
                         sector = sectorInput.text.toString(),
                         location = locationInput.text.toString(),
                         logoUrl = logoUrl,
-                        createdBy = "TODO_USER_ID"
+                        //createdBy = "TODO_USER_ID"
+                        createdBy = "debug_user_id"
                     )
                     if (company == null) {
                         viewModel.addCompany(newCompany) {}

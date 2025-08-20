@@ -5,8 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.search.SearchFragment"
-    android:paddingTop="?attr/actionBarSize">
+    tools:context=".ui.search.SearchFragment">
 
     <!-- Barra di ricerca in alto -->
     <androidx.appcompat.widget.SearchView

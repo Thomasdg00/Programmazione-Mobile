@@ -37,7 +37,8 @@ class AziendaFragment : Fragment() {
         super.onCreate(savedInstanceState)
         companyId = arguments?.getString(ARG_ITEM)
         // TODO: recupera l'ID utente corrente da auth/session
-        currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+        //currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+        currentUserId = "debug_user_id" // User ID fittizio per debug
     }
 
     override fun onCreateView(
