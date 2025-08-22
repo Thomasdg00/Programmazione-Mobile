@@ -6,5 +6,6 @@ data class Company(
     val logoUrl: String = "",
     val location: String = "",
     val sector: String = "",
+    val jobType: String = "",
     val averageRating: Double = 0.0,
     val createdBy: String = "")

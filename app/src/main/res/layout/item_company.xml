@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:clickable="true"
+    android:focusable="false">
 
     <ImageView
         android:id="@+id/imageViewCompanyLogo"
@@ -32,6 +34,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Settore"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:id="@+id/textViewCompanyJobType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Job Type"
             android:textSize="14sp"/>
 
         <TextView

@@ -61,7 +61,6 @@ class CompanyListFragment : Fragment() {
         view.findViewById<Button>(R.id.buttonAddCompany).setOnClickListener {
             showEditCompanyDialog(null)
         }
-
         searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 filterCompanies()
@@ -93,12 +92,42 @@ class CompanyListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        adapter = CompanyAdapter { company ->
+            showEditCompanyDialog(company)
+        }
+        recyclerView.adapter = adapter
+
+        // ===============================
+        // Dato di prova per testare la RecyclerView
+        // ===============================
+
+        /*val testCompany = Company(
+            id = "1",
+            name = "Azienda Prova",
+            sector = "Tecnologia",
+            location = "Milano",
+            logoUrl = "", // se vuoi testare l’immagine puoi inserire un URL valido
+            averageRating = 4.5,
+            createdBy = "testUser"
+        )
+        allCompanies = listOf(testCompany)
+        adapter.submitList(allCompanies)
+*/
+
+        // ===============================
+        // Dati reali dal ViewModel
+        // ===============================
         viewModel.companies.observe(viewLifecycleOwner) { companies ->
             allCompanies = companies
             setupSpinners(companies)
-            filterCompanies()
+            filterCompanies() // questa funzione calcola la lista filtrata e la passa all'adapter
         }
-        viewModel.loadCompanies() }
+
+        viewModel.loadCompanies()
+    }
+
     private fun filterCompanies() {
         val query = searchView.query?.toString()?.trim() ?: ""
         val filtered = allCompanies.filter { company ->
@@ -109,7 +138,8 @@ class CompanyListFragment : Fragment() {
             (selectedSector == null || company.sector == selectedSector) &&
             (selectedLocation == null || company.location == selectedLocation)
         }
-        adapter.submitList(filtered)
+
+
     }
 
      private fun setupSpinners(companies: List<Company>) {

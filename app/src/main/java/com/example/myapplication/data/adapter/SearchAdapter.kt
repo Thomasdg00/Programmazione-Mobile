@@ -16,13 +16,13 @@ class SearchAdapter(
     inner class SearchViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textItem: TextView = itemView.findViewById(R.id.textItem)
 
-    fun bind(item: String) {
-        textItem.text = item
-        itemView.setOnClickListener {
-            onItemClick(item)
+        fun bind(item: String) {
+            textItem.text = item
+            itemView.setOnClickListener {
+                onItemClick(item)
+            }
         }
     }
-}
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_search_result, parent, false)
