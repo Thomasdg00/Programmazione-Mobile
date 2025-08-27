@@ -8,12 +8,17 @@ import android.util.Patterns
 import com.example.myapplication.data.LoginRepository
 import com.example.myapplication.data.Result
 import com.example.myapplication.R
+import com.example.myapplication.data.UserProfileRepository
 import kotlinx.coroutines.launch
 
-class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
+class LoginViewModel(private val loginRepository: LoginRepository,
+                     private val userProfileRepository: UserProfileRepository) : ViewModel() {
 
     private val _loginForm = MutableLiveData<LoginFormState>()
     val loginFormState: LiveData<LoginFormState> = _loginForm
+
+    private val _accountType = MutableLiveData<String>()
+    val accountType: LiveData<String> = _accountType
 
     private val _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
@@ -22,9 +27,18 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
         viewModelScope.launch {
             val result = loginRepository.login(email, password)
             if (result is Result.Success) {
-                _loginResult.value =
-                    LoginResult(success = LoggedInUserView(displayName = result.data.displayName))
-            } else {
+                val userId = result.data.userId  // deve venire dal LoginRepository
+
+                // Recupero il profilo da Firestore
+                val profile = userProfileRepository.getUserProfile(userId)
+
+                _loginResult.value = LoginResult(
+                    success = LoggedInUserView(
+                        userId = userId,
+                        displayName = result.data.displayName,
+                        accountType = profile?.type ?: "standard" // default se nullo
+                    )
+                )  } else {
                 _loginResult.value = LoginResult(error = R.string.login_failed)
             }
         }

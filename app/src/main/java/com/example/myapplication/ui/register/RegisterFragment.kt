@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.R
 import com.example.myapplication.data.RegisterDataSource
 import com.example.myapplication.data.RegisterRepository
+import com.example.myapplication.ui.UserSessionViewModel
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 
@@ -68,8 +69,16 @@ class RegisterFragment : Fragment() {
             result.error?.let {
                 Toast.makeText(requireContext(), getString(it), Toast.LENGTH_SHORT).show()
             }
-            result.success?.let {
+            result.success?.let { it ->
                 Toast.makeText(requireContext(), getString(R.string.registration_success) + ", " + it.displayName, Toast.LENGTH_SHORT).show()
+
+                // recupero lo UserSessionViewModel condiviso
+                val sessionViewModel = ViewModelProvider(requireActivity())[UserSessionViewModel::class.java]
+
+                // qui devi passare i dati che già hai al momento della registrazione
+                sessionViewModel.setUserId(it.userId) // se ce l’hai
+                sessionViewModel.setDisplayName(it.displayName)
+                sessionViewModel.setAccountType(it.accountType)
                 val intent = android.content.Intent(requireContext(), com.example.myapplication.MainActivity::class.java)
                 startActivity(intent)
                 requireActivity().finish()

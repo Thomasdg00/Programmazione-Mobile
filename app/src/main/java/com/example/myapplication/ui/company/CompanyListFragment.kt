@@ -13,19 +13,25 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.example.myapplication.AziendaFragment
 import com.example.myapplication.R
+import com.example.myapplication.data.UserProfileRepository
 import com.example.myapplication.data.model.Company
+import com.example.myapplication.ui.review.AziendaRecensioniFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.launch
 
 class CompanyListFragment : Fragment() {
+
     private var selectedLogoUri: Uri? = null
     private var logoImageView: ImageView? = null
-    private var onLogoUploaded: ((String) -> Unit)? = null
 
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -37,42 +43,38 @@ class CompanyListFragment : Fragment() {
             }
         }
     }
+
     private val viewModel: CompanyViewModel by viewModels()
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: CompanyAdapter
     private lateinit var searchView: androidx.appcompat.widget.SearchView
     private lateinit var spinnerSector: android.widget.Spinner
     private lateinit var spinnerLocation: android.widget.Spinner
+
     private var allCompanies: List<Company> = emptyList()
     private var selectedSector: String? = null
     private var selectedLocation: String? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_company_list, container, false)
         searchView = view.findViewById(R.id.searchViewCompanies)
         spinnerSector = view.findViewById(R.id.spinnerSector)
         spinnerLocation = view.findViewById(R.id.spinnerLocation)
         recyclerView = view.findViewById(R.id.recyclerViewCompanies)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        adapter = CompanyAdapter { company -> showEditCompanyDialog(company) }
-        recyclerView.adapter = adapter
+
+        // Bottone aggiungi azienda
         view.findViewById<Button>(R.id.buttonAddCompany).setOnClickListener {
             showEditCompanyDialog(null)
         }
-        searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                filterCompanies()
-                return true
-            }
-            override fun onQueryTextChange(newText: String?): Boolean {
-                filterCompanies()
-                return true
-            }
 
+        // SearchView
+        searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?) = true.also { filterCompanies() }
+            override fun onQueryTextChange(newText: String?) = true.also { filterCompanies() }
         })
 
+        // Spinner listeners
         spinnerSector.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: android.widget.AdapterView<*>, view: View?, position: Int, id: Long) {
                 selectedSector = if (position == 0) null else parent.getItemAtPosition(position) as String
@@ -87,42 +89,42 @@ class CompanyListFragment : Fragment() {
             }
             override fun onNothingSelected(parent: android.widget.AdapterView<*>) {}
         }
+
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        adapter = CompanyAdapter { company ->
-            showEditCompanyDialog(company)
+        val userId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+        if (userId == null) {
+            Toast.makeText(requireContext(), "Utente non autenticato", Toast.LENGTH_SHORT).show()
+            return
         }
-        recyclerView.adapter = adapter
 
-        // ===============================
-        // Dato di prova per testare la RecyclerView
-        // ===============================
+        // Inizializza l'adapter con comportamento in base al tipo account
+        lifecycleScope.launch {
+            val userProfile = UserProfileRepository().getUserProfile(userId)
+            val accountType = userProfile?.type ?: "standard"
 
-        /*val testCompany = Company(
-            id = "1",
-            name = "Azienda Prova",
-            sector = "Tecnologia",
-            location = "Milano",
-            logoUrl = "", // se vuoi testare l’immagine puoi inserire un URL valido
-            averageRating = 4.5,
-            createdBy = "testUser"
-        )
-        allCompanies = listOf(testCompany)
-        adapter.submitList(allCompanies)
-*/
+            adapter = CompanyAdapter { company: Company ->
+                val bundle = Bundle().apply { putString("companyId", company.id) }
+                val fragment = if (accountType == "aziendale") {
+                    findNavController().navigate(R.id.action_navigation_companies_to_aziendaFragment, bundle)
+                } else {
+                    findNavController().navigate(R.id.action_navigation_companies_to_aziendaRecensioniFragment, bundle)
+                }
 
-        // ===============================
-        // Dati reali dal ViewModel
-        // ===============================
+            }
+
+            recyclerView.adapter = adapter
+        }
+
+        // Osserva i dati dal ViewModel
         viewModel.companies.observe(viewLifecycleOwner) { companies ->
             allCompanies = companies
             setupSpinners(companies)
-            filterCompanies() // questa funzione calcola la lista filtrata e la passa all'adapter
+            filterCompanies()
         }
 
         viewModel.loadCompanies()
@@ -132,27 +134,27 @@ class CompanyListFragment : Fragment() {
         val query = searchView.query?.toString()?.trim() ?: ""
         val filtered = allCompanies.filter { company ->
             (query.isBlank() ||
-                company.name.contains(query, true) ||
-                company.sector.contains(query, true) ||
-                company.location.contains(query, true)) &&
-            (selectedSector == null || company.sector == selectedSector) &&
-            (selectedLocation == null || company.location == selectedLocation)
+                    company.name.contains(query, true) ||
+                    company.sector.contains(query, true) ||
+                    company.location.contains(query, true)) &&
+                    (selectedSector == null || company.sector == selectedSector) &&
+                    (selectedLocation == null || company.location == selectedLocation)
         }
-
-
+        adapter.submitList(filtered)
     }
 
-     private fun setupSpinners(companies: List<Company>) {
+    private fun setupSpinners(companies: List<Company>) {
         val sectors = listOf("Tutti i settori") + companies.map { it.sector }.distinct().sorted()
         val locations = listOf("Tutte le località") + companies.map { it.location }.distinct().sorted()
+
         val sectorAdapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, sectors)
         sectorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerSector.adapter = sectorAdapter
+
         val locationAdapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, locations)
         locationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerLocation.adapter = locationAdapter
     }
-
 
     fun showEditCompanyDialog(company: Company?) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_edit_company, null)
@@ -204,7 +206,6 @@ class CompanyListFragment : Fragment() {
             }
             .setNegativeButton("Annulla", null)
             .show()
-
     }
 
     private fun uploadLogoToFirebase(uri: Uri, onComplete: (String) -> Unit) {
@@ -220,5 +221,6 @@ class CompanyListFragment : Fragment() {
                 onComplete("")
             }
     }
-    }
+}
+
 

@@ -10,6 +10,7 @@
 
 
     <LinearLayout
+        android:layout_marginTop="40dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -44,14 +45,22 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewCompanies"
-        android:layout_width="374dp"
-        android:layout_height="436dp"
+        android:layout_width="375dp"
+        android:layout_height="415dp"
         android:layout_weight="1" />
 
     <Button
         android:id="@+id/buttonAddCompany"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Aggiungi Azienda" />
+        android:text="Aggiungi Azienda"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"/>
+
+    <FrameLayout
+        android:id="@+id/company_child_container"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:background="@android:color/darker_gray" />
 
 </LinearLayout>

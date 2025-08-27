@@ -26,7 +26,7 @@ class RegisterViewModel(private val registerRepository: RegisterRepository) : Vi
                 val userProfile = UserProfile(userId, name, type, bio, profileImageUrl)
                 userProfileRepository.saveUserProfile(userProfile)
 
-                _registerResult.value = RegisterResult(success = LoggedInUserView(result.data.displayName))
+                _registerResult.value = RegisterResult(success = LoggedInUserView(result.data.displayName, result.data.userId, type))
             } else {
                 _registerResult.value = RegisterResult(error = R.string.registration_failed)
             }

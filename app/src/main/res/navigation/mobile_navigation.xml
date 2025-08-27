@@ -26,5 +26,29 @@
         android:id="@+id/navigation_companies"
         android:name="com.example.myapplication.ui.company.CompanyListFragment"
         android:label="@string/title_companies"
-        tools:layout="@layout/fragment_company_list" />
+        tools:layout="@layout/fragment_company_list" >
+        <action
+            android:id="@+id/action_navigation_companies_to_aziendaRecensioniFragment"
+            app:destination="@id/aziendaRecensioniFragment" />
+        <action
+            android:id="@+id/action_navigation_companies_to_aziendaFragment"
+            app:destination="@id/aziendaFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/aziendaFragment"
+        android:name="com.example.myapplication.AziendaFragment"
+        android:label="fragment_azienda"
+        tools:layout="@layout/fragment_azienda">
+    <argument
+        android:name="companyId"
+        app:argType="string" />
+</fragment>
+    <fragment
+        android:id="@+id/aziendaRecensioniFragment"
+        android:name="com.example.myapplication.ui.review.AziendaRecensioniFragment"
+        android:label="AziendaRecensioniFragment">
+        <argument
+            android:name="companyId"
+            app:argType="string" />
+    </fragment>
 </navigation>

@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.data.model.Review
-import com.example.myapplication.ui.azienda.AziendaRecensioniViewModel
 
 class AziendaRecensioniFragment : Fragment() {
     private val viewModel: ReviewViewModel by viewModels()

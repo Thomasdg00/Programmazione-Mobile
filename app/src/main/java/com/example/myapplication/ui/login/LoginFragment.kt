@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.R
 import com.example.myapplication.data.LoginDataSource
 import com.example.myapplication.data.LoginRepository
+import com.example.myapplication.ui.UserSessionViewModel
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 
@@ -33,7 +34,8 @@ class LoginFragment : Fragment() {
 
         // Simple ViewModel instantiation for demo; use DI in production
         val repository = LoginRepository(LoginDataSource())
-        viewModel = ViewModelProvider(this, LoginViewModelFactory(repository))[LoginViewModel::class.java]
+        val userProfileRepository = com.example.myapplication.data.UserProfileRepository()
+        viewModel = ViewModelProvider(this, LoginViewModelFactory(repository, userProfileRepository))[LoginViewModel::class.java]
 
         loginButton.setOnClickListener {
             val email = emailEditText.text?.toString() ?: ""
@@ -47,6 +49,12 @@ class LoginFragment : Fragment() {
             }
             result.success?.let {
                 Toast.makeText(requireContext(), getString(R.string.welcome) + ", " + it.displayName, Toast.LENGTH_SHORT).show()
+                val sessionViewModel = ViewModelProvider(requireActivity())[UserSessionViewModel::class.java]
+
+                // Salvo i dati nella sessione
+                sessionViewModel.setUserId(it.userId)
+                sessionViewModel.setDisplayName(it.displayName)
+                sessionViewModel.setAccountType(it.accountType)
                 val intent = android.content.Intent(requireContext(), com.example.myapplication.MainActivity::class.java)
                 startActivity(intent)
                 requireActivity().finish()
