@@ -16,24 +16,22 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
-import com.example.myapplication.AziendaFragment
 import com.example.myapplication.R
 import com.example.myapplication.data.UserProfileRepository
 import com.example.myapplication.data.model.Company
-import com.example.myapplication.ui.review.AziendaRecensioniFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.coroutines.launch
 
 class CompanyListFragment : Fragment() {
 
     private var selectedLogoUri: Uri? = null
     private var logoImageView: ImageView? = null
 
-    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    private val pickImageLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
             val uri = data?.data
@@ -50,25 +48,31 @@ class CompanyListFragment : Fragment() {
     private lateinit var searchView: androidx.appcompat.widget.SearchView
     private lateinit var spinnerSector: android.widget.Spinner
     private lateinit var spinnerLocation: android.widget.Spinner
-
     private var allCompanies: List<Company> = emptyList()
     private var selectedSector: String? = null
     private var selectedLocation: String? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_company_list, container, false)
+
         searchView = view.findViewById(R.id.searchViewCompanies)
         spinnerSector = view.findViewById(R.id.spinnerSector)
         spinnerLocation = view.findViewById(R.id.spinnerLocation)
         recyclerView = view.findViewById(R.id.recyclerViewCompanies)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        // Bottone aggiungi azienda
+        adapter = CompanyAdapter { company ->
+            showEditCompanyDialog(company)
+        }
+        recyclerView.adapter = adapter
+
         view.findViewById<Button>(R.id.buttonAddCompany).setOnClickListener {
             showEditCompanyDialog(null)
         }
 
-        // SearchView
+        // SearchView listener
         searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?) = true.also { filterCompanies() }
             override fun onQueryTextChange(newText: String?) = true.also { filterCompanies() }
@@ -76,14 +80,18 @@ class CompanyListFragment : Fragment() {
 
         // Spinner listeners
         spinnerSector.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: android.widget.AdapterView<*>, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: android.widget.AdapterView<*>, view: View?, position: Int, id: Long
+            ) {
                 selectedSector = if (position == 0) null else parent.getItemAtPosition(position) as String
                 filterCompanies()
             }
             override fun onNothingSelected(parent: android.widget.AdapterView<*>) {}
         }
         spinnerLocation.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: android.widget.AdapterView<*>, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: android.widget.AdapterView<*>, view: View?, position: Int, id: Long
+            ) {
                 selectedLocation = if (position == 0) null else parent.getItemAtPosition(position) as String
                 filterCompanies()
             }
@@ -96,27 +104,23 @@ class CompanyListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val userId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
-        if (userId == null) {
-            Toast.makeText(requireContext(), "Utente non autenticato", Toast.LENGTH_SHORT).show()
-            return
-        }
+        val buttonAddCompany = view.findViewById<Button>(R.id.buttonAddCompany)
 
-        // Inizializza l'adapter con comportamento in base al tipo account
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            val userId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+            if (userId == null) {
+                Toast.makeText(requireContext(), "Utente non autenticato", Toast.LENGTH_SHORT).show()
+                return@launchWhenStarted
+            }
+
             val userProfile = UserProfileRepository().getUserProfile(userId)
             val accountType = userProfile?.type ?: "standard"
 
-            adapter = CompanyAdapter { company: Company ->
-                val bundle = Bundle().apply { putString("companyId", company.id) }
-                val fragment = if (accountType == "aziendale") {
-                    findNavController().navigate(R.id.action_navigation_companies_to_aziendaFragment, bundle)
-                } else {
-                    findNavController().navigate(R.id.action_navigation_companies_to_aziendaRecensioniFragment, bundle)
-                }
+            // Mostra o nascondi il bottone
+            buttonAddCompany.visibility = if (accountType == "aziendale") View.VISIBLE else View.GONE
 
-            }
-
+            // Inizializza l'adapter solo dopo aver letto il tipo account
+            adapter = CompanyAdapter { company -> showEditCompanyDialog(company) }
             recyclerView.adapter = adapter
         }
 
@@ -209,7 +213,8 @@ class CompanyListFragment : Fragment() {
     }
 
     private fun uploadLogoToFirebase(uri: Uri, onComplete: (String) -> Unit) {
-        val storageRef = FirebaseStorage.getInstance().reference.child("company_logos/${System.currentTimeMillis()}.jpg")
+        val storageRef = FirebaseStorage.getInstance().reference
+            .child("company_logos/${System.currentTimeMillis()}.jpg")
         storageRef.putFile(uri)
             .addOnSuccessListener {
                 storageRef.downloadUrl.addOnSuccessListener { downloadUri ->
@@ -222,5 +227,4 @@ class CompanyListFragment : Fragment() {
             }
     }
 }
-
 
